@@ -1,0 +1,21 @@
+[Unit]
+Description=Bot de Telegram - Tasas de Cambio Cuba
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=ritterfinder
+Group=ritterfinder
+WorkingDirectory=/home/ritterfinder/cambiobot
+Environment=PATH=/home/ritterfinder/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/ritterfinder/.local/bin/uv run python main.py
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cambiobot
+
+[Install]
+WantedBy=multi-user.target 
