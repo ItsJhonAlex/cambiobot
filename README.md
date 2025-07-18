@@ -86,16 +86,27 @@ TRMI_URL=https://wa.cambiocuba.money/trmi.png
 2. Ve a: `https://api.telegram.org/bot<TU_TOKEN>/getUpdates`
 3. Busca el valor `"id"` en `"chat"`
 
-## 📱 Comandos disponibles
+## 📱 Comandos y Botones disponibles
 
+### ⌨️ **Comandos de Texto**
 | Comando | Descripción |
 |---------|-------------|
-| `/start` | Iniciar el bot y mostrar bienvenida |
+| `/start` | Iniciar el bot y mostrar menú con botones |
 | `/help` | Mostrar ayuda y comandos disponibles |
 | `/tasas` | Obtener ambas tasas (CRYPTO + TRMI) |
 | `/crypto` | Obtener solo tasa de criptomonedas (TRMCC) |
 | `/trmi` | Obtener solo tasa del mercado informal (TRMI) |
 | `/status` | Ver estado del bot y configuración |
+
+### 🎯 **Botones Interactivos**
+- **📊 Ambas Tasas**: Muestra TRMCC + TRMI
+- **💎 Crypto**: Solo tasa de criptomonedas  
+- **📈 TRMI**: Solo tasa del mercado informal
+- **🔄 Actualizar**: Fuerza actualización de datos
+- **📊 Estado**: Ver estado del bot
+- **ℹ️ Ayuda**: Mostrar ayuda
+- **❤️ 👍 👎**: Botones de reacción
+- **💤 📸📻**: Acciones adicionales
 
 ## 🔄 Funcionamiento automático
 

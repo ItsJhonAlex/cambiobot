@@ -1,5 +1,5 @@
 [Unit]
-Description=Bot de Telegram - Tasas de Cambio Cuba
+Description=Bot de Telegram - Tasas de Cambio Cuba (Modular)
 After=network.target
 Wants=network.target
 
@@ -9,7 +9,7 @@ User=ritterfinder
 Group=ritterfinder
 WorkingDirectory=/home/ritterfinder/cambiobot
 Environment=PATH=/home/ritterfinder/.local/bin:/usr/local/bin:/usr/bin:/bin
-ExecStart=/home/ritterfinder/.local/bin/uv run python main.py
+ExecStart=/home/ritterfinder/.local/bin/uv run python main_modular.py
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=always
 RestartSec=10

@@ -17,6 +17,7 @@ NC='\033[0m' # No Color
 BOT_NAME="cambiobot"
 LOG_FILE="bot.log"
 PID_FILE="bot.pid"
+MAIN_FILE="main_modular.py"  # Cambiado a la versión modular
 
 # Funciones de utilidad
 print_header() {
@@ -67,6 +68,58 @@ check_env() {
     fi
 }
 
+# Verificar estructura modular
+check_modular_structure() {
+    if [ ! -f "$MAIN_FILE" ]; then
+        print_error "Archivo $MAIN_FILE no encontrado"
+        print_info "Asegúrate de estar usando la versión modular del bot"
+        return 1
+    fi
+    
+    if [ ! -d "src" ]; then
+        print_error "Directorio src/ no encontrado"
+        print_info "Asegúrate de estar usando la versión modular del bot"
+        return 1
+    fi
+}
+
+# Actualizar desde GitHub
+pull_updates() {
+    print_header
+    print_info "Actualizando desde GitHub..."
+    
+    # Verificar si es un repositorio git
+    if [ ! -d ".git" ]; then
+        print_error "No es un repositorio git"
+        return 1
+    fi
+    
+    # Verificar si hay cambios locales
+    if [ -n "$(git status --porcelain)" ]; then
+        print_warning "Hay cambios locales sin commit"
+        read -p "¿Quieres hacer stash de los cambios? (y/N): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            git stash
+            print_info "Cambios guardados en stash"
+        else
+            print_error "Actualización cancelada"
+            return 1
+        fi
+    fi
+    
+    # Hacer pull
+    git pull origin main || git pull origin master
+    
+    print_success "Actualización completada"
+    
+    # Reinstalar dependencias si es necesario
+    if [ -f "pyproject.toml" ] && [ "$(stat -c %Y pyproject.toml)" -gt "$(stat -c %Y uv.lock 2>/dev/null || echo 0)" ]; then
+        print_info "Dependencias actualizadas, reinstalando..."
+        install_deps
+    fi
+}
+
 # Instalar dependencias
 install_deps() {
     print_info "Instalando dependencias..."
@@ -87,25 +140,27 @@ install_deps() {
 run_bot() {
     print_header
     check_env || return 1
+    check_modular_structure || return 1
     
-    print_info "Iniciando bot..."
+    print_info "Iniciando bot (versión modular)..."
     export PATH="$HOME/.local/bin:$PATH"
-    uv run python main.py
+    uv run python "$MAIN_FILE"
 }
 
 # Ejecutar el bot en background
 run_background() {
     print_header
     check_env || return 1
+    check_modular_structure || return 1
     
     if [ -f "$PID_FILE" ] && kill -0 "$(cat $PID_FILE)" 2>/dev/null; then
         print_warning "El bot ya está ejecutándose (PID: $(cat $PID_FILE))"
         return 1
     fi
     
-    print_info "Iniciando bot en background..."
+    print_info "Iniciando bot en background (versión modular)..."
     export PATH="$HOME/.local/bin:$PATH"
-    nohup uv run python main.py > "$LOG_FILE" 2>&1 &
+    nohup uv run python "$MAIN_FILE" > "$LOG_FILE" 2>&1 &
     echo $! > "$PID_FILE"
     
     print_success "Bot iniciado en background (PID: $!)"
@@ -120,7 +175,7 @@ stop_bot() {
     if [ ! -f "$PID_FILE" ]; then
         print_warning "Archivo PID no encontrado"
         # Intentar matar por nombre de proceso
-        pkill -f "python main.py" && print_success "Bot detenido" || print_error "No se pudo detener el bot"
+        pkill -f "python $MAIN_FILE" && print_success "Bot detenido" || print_error "No se pudo detener el bot"
         return
     fi
     
@@ -180,6 +235,18 @@ show_status() {
     else
         echo "❌ Archivo .env: no encontrado"
     fi
+    
+    # Mostrar información de la estructura modular
+    echo ""
+    print_info "Estructura modular:"
+    if [ -d "src" ]; then
+        echo "✅ Directorio src/: encontrado"
+        echo "✅ $MAIN_FILE: encontrado"
+        echo "📁 Módulos disponibles:"
+        ls -la src/ 2>/dev/null || true
+    else
+        echo "❌ Estructura modular: no encontrada"
+    fi
 }
 
 # Test de conexión
@@ -215,7 +282,40 @@ clean() {
     rm -f "$LOG_FILE" "$PID_FILE"
     rm -rf images/*.png
     
+    # Limpiar archivo main.py original si existe
+    if [ -f "main.py" ]; then
+        print_warning "Eliminando main.py original (ya no necesario)"
+        rm -f main.py
+    fi
+    
     print_success "Limpieza completada"
+}
+
+# Migrar a estructura modular
+migrate_to_modular() {
+    print_header
+    print_info "Migrando a estructura modular..."
+    
+    # Verificar si ya está migrado
+    if [ -f "$MAIN_FILE" ] && [ -d "src" ]; then
+        print_success "Ya estás usando la estructura modular"
+        return 0
+    fi
+    
+    # Verificar si existe main.py original
+    if [ ! -f "main.py" ]; then
+        print_error "No se encontró main.py original"
+        return 1
+    fi
+    
+    # Crear backup del main.py original
+    cp main.py main.py.backup
+    print_info "Backup creado: main.py.backup"
+    
+    # Eliminar main.py original
+    rm -f main.py
+    print_success "Migración completada"
+    print_info "Ahora usa: ./run.sh run"
 }
 
 # Mostrar ayuda
@@ -226,6 +326,7 @@ show_help() {
     echo ""
     echo "Comandos disponibles:"
     echo "  install     - Instalar dependencias"
+    echo "  pull        - Actualizar desde GitHub"
     echo "  run         - Ejecutar bot (modo interactivo)"
     echo "  start       - Ejecutar bot en background"
     echo "  stop        - Detener bot"
@@ -234,13 +335,20 @@ show_help() {
     echo "  logs        - Ver logs en tiempo real"
     echo "  test        - Probar conexión a URLs"
     echo "  clean       - Limpiar archivos temporales"
+    echo "  migrate     - Migrar a estructura modular"
     echo "  help        - Mostrar esta ayuda"
     echo ""
     echo "Ejemplos:"
     echo "  ./run.sh install    # Primera instalación"
+    echo "  ./run.sh pull       # Actualizar desde GitHub"
     echo "  ./run.sh start      # Iniciar en background"
     echo "  ./run.sh logs       # Ver logs"
     echo "  ./run.sh stop       # Detener bot"
+    echo ""
+    echo "Estructura modular:"
+    echo "  ✅ Usando main_modular.py"
+    echo "  ✅ Código organizado en src/"
+    echo "  ✅ Mejor mantenibilidad y escalabilidad"
 }
 
 # Función principal
@@ -248,6 +356,9 @@ main() {
     case "${1:-help}" in
         "install")
             install_deps
+            ;;
+        "pull")
+            pull_updates
             ;;
         "run")
             run_bot
@@ -275,6 +386,9 @@ main() {
         "clean")
             clean
             ;;
+        "migrate")
+            migrate_to_modular
+            ;;
         "help"|*)
             show_help
             ;;
@@ -282,8 +396,8 @@ main() {
 }
 
 # Verificar que estemos en el directorio correcto
-if [ ! -f "main.py" ]; then
-    print_error "main.py no encontrado. Ejecuta este script desde el directorio del proyecto."
+if [ ! -f "$MAIN_FILE" ] && [ ! -f "main.py" ]; then
+    print_error "Archivo principal no encontrado. Ejecuta este script desde el directorio del proyecto."
     exit 1
 fi
 
