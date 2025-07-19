@@ -1,6 +1,6 @@
-# 🎯 Botones Interactivos - Demo
+# 🎯 Botones Interactivos - Demo (DESCONTINUADO)
 
-## 📱 Funcionalidades de Botones Implementadas
+## 📱 Funcionalidades de Botones (ELIMINADAS)
 
 ### 🏠 **Menú Principal**
 ```
@@ -57,11 +57,11 @@ Selecciona una opción:
 ### 📁 **Archivos Modificados**
 ```
 src/handlers/
-├── command_handlers.py    # Comandos con botones
-└── button_handlers.py     # Lógica de botones
+├── command_handlers.py    # Comandos de texto únicamente
+└── button_handlers.py     # ELIMINADO
 
 src/bot/
-└── cambio_bot.py         # Integración de botones
+└── cambio_bot.py         # Sin integración de botones
 ```
 
 ### 🔧 **Características**
@@ -104,10 +104,10 @@ keyboard = [
 
 ## 🎨 Personalización
 
-### 🎯 **Agregar Nuevos Botones**
-1. Edita `src/handlers/button_handlers.py`
-2. Agrega método en `ButtonHandlers`
-3. Registra en `handle_button_callback`
+### 🎯 **Agregar Nuevos Botones** (NO DISPONIBLE)
+1. Los botones han sido eliminados del bot
+2. Solo comandos de texto están disponibles
+3. Para reactivar botones, restaurar archivos anteriores
 
 ### 🎨 **Cambiar Emojis**
 ```python
@@ -128,32 +128,32 @@ keyboard = [
 
 ### ✅ **Compatibilidad**
 - Los comandos originales siguen funcionando
-- Botones son opcionales
-- Fácil de activar/desactivar
+- Botones han sido eliminados
+- Solo comandos de texto disponibles
 
 ### 🚀 **Activación**
 ```bash
-# El bot ya incluye botones por defecto
+# El bot funciona solo con comandos de texto
 ./run.sh start
 ```
 
-## 📊 Beneficios
+## 📊 Estado Actual
 
-### 🎯 **UX Mejorada**
-- Interfaz más intuitiva
-- Navegación más rápida
-- Menos comandos de texto
+### 🎯 **Interfaz Simplificada**
+- Solo comandos de texto
+- Interfaz más directa
+- Menos complejidad
 
-### 📱 **Mobile-Friendly**
-- Botones grandes y fáciles de tocar
-- Funciona bien en móviles
-- Acceso rápido a funciones
+### 📱 **Funcionalidad Básica**
+- Comandos tradicionales
+- Funciona en todos los dispositivos
+- Acceso directo a funciones
 
-### 🔄 **Escalabilidad**
-- Fácil agregar nuevos botones
-- Estructura modular
-- Mantenimiento sencillo
+### 🔄 **Mantenimiento Sencillo**
+- Código más simple
+- Menos archivos
+- Fácil de mantener
 
 ---
 
-¡Los botones hacen que tu bot sea mucho más interactivo y fácil de usar! 🎉 
+¡El bot ahora es más simple y directo! 🎉 

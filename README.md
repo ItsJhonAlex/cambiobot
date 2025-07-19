@@ -72,47 +72,43 @@ TELEGRAM_BOT_TOKEN=123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
 # ID del chat para notificaciones automáticas (OPCIONAL)
 CHAT_ID=12345678
 
+# ID del grupo para notificaciones automáticas
+GROUP_ID=4664753197
+
+# ID del canal para notificaciones automáticas
+CHANNEL_ID=2821523577
+
 # Intervalo de verificación en minutos (default: 30)
 UPDATE_INTERVAL=30
 
 # URLs de las imágenes (ya configuradas)
-CRYPTO_URL=https://wa.cambiocuba.money/crypto_trmi.png
+CRYPTO_URL=https://wa.cambiocuba.money/real_crypto_trmi.png
 TRMI_URL=https://wa.cambiocuba.money/trmi.png
 ```
 
-### 🔍 Encontrar tu CHAT_ID
+### 🔍 Encontrar tus IDs
 
-1. Envía un mensaje a tu bot
-2. Ve a: `https://api.telegram.org/bot<TU_TOKEN>/getUpdates`
-3. Busca el valor `"id"` en `"chat"`
+1. **Para CHAT_ID**: Envía un mensaje a tu bot y ve a: `https://api.telegram.org/bot<TU_TOKEN>/getUpdates`
+2. **Para GROUP_ID**: Agrega el bot al grupo y busca el `"id"` del grupo en getUpdates
+3. **Para CHANNEL_ID**: Agrega el bot al canal como admin y busca el `"id"` del canal
 
 ## 📱 Comandos y Botones disponibles
 
 ### ⌨️ **Comandos de Texto**
 | Comando | Descripción |
 |---------|-------------|
-| `/start` | Iniciar el bot y mostrar menú con botones |
+| `/start` | Iniciar el bot |
 | `/help` | Mostrar ayuda y comandos disponibles |
 | `/tasas` | Obtener ambas tasas (CRYPTO + TRMI) |
 | `/crypto` | Obtener solo tasa de criptomonedas (TRMCC) |
 | `/trmi` | Obtener solo tasa del mercado informal (TRMI) |
 | `/status` | Ver estado del bot y configuración |
 
-### 🎯 **Botones Interactivos**
-- **📊 Ambas Tasas**: Muestra TRMCC + TRMI
-- **💎 Crypto**: Solo tasa de criptomonedas  
-- **📈 TRMI**: Solo tasa del mercado informal
-- **🔄 Actualizar**: Fuerza actualización de datos
-- **📊 Estado**: Ver estado del bot
-- **ℹ️ Ayuda**: Mostrar ayuda
-- **❤️ 👍 👎**: Botones de reacción
-- **💤 📸📻**: Acciones adicionales
-
 ## 🔄 Funcionamiento automático
 
 - **Verificación periódica**: El bot verifica cada X minutos si hay nuevas tasas
 - **Detección de cambios**: Usa hash MD5 para detectar si las imágenes cambiaron
-- **Notificaciones automáticas**: Si tienes `CHAT_ID` configurado, te enviará las actualizaciones
+- **Notificaciones automáticas**: Si tienes `CHAT_ID`, `GROUP_ID` o `CHANNEL_ID` configurados, te enviará las actualizaciones
 - **Almacenamiento local**: Las imágenes se guardan en la carpeta `images/`
 
 ## 📁 Estructura del proyecto
@@ -126,7 +122,7 @@ cambiobot/
 ├── pyproject.toml      # Configuración del proyecto
 ├── uv.lock            # Lock file de dependencias
 └── images/            # Directorio para imágenes (se crea automáticamente)
-    ├── crypto_trmi.png
+    ├── real_crypto_trmi.png
     └── trmi.png
 ```
 

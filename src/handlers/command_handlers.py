@@ -15,33 +15,25 @@ from src.utils.logger import logger
 class CommandHandlers:
     """Manejadores de comandos del bot"""
     
-    def __init__(self, rates_service: RatesService, button_handlers=None):
+    def __init__(self, rates_service: RatesService):
         self.rates_service = rates_service
-        self.button_handlers = button_handlers
     
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Comando /start"""
-        if self.button_handlers:
-            await update.message.reply_text(
-                WELCOME_MESSAGE,
-                reply_markup=self.button_handlers.get_main_menu_keyboard()
-            )
-        else:
+        if update.message:
             await update.message.reply_text(WELCOME_MESSAGE)
     
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Comando /help"""
-        help_text = HELP_MESSAGE.format(UPDATE_INTERVAL)
-        if self.button_handlers:
-            await update.message.reply_text(
-                help_text,
-                reply_markup=self.button_handlers.get_main_menu_keyboard()
-            )
-        else:
+        if update.message:
+            help_text = HELP_MESSAGE.format(UPDATE_INTERVAL)
             await update.message.reply_text(help_text)
     
     async def get_rates_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Comando /tasas - obtener ambas tasas"""
+        if not update.message:
+            return
+            
         await update.message.reply_text("🔄 Obteniendo las tasas de cambio...")
         
         try:
@@ -65,6 +57,9 @@ class CommandHandlers:
     
     async def get_crypto_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Comando /crypto - obtener solo tasa de criptomonedas"""
+        if not update.message:
+            return
+            
         await update.message.reply_text("🔄 Obteniendo tasa de criptomonedas...")
         
         try:
@@ -83,6 +78,9 @@ class CommandHandlers:
     
     async def get_trmi_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Comando /trmi - obtener solo tasa del mercado informal"""
+        if not update.message:
+            return
+            
         await update.message.reply_text("🔄 Obteniendo tasa del mercado informal...")
         
         try:
@@ -101,6 +99,9 @@ class CommandHandlers:
     
     async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Comando /status - ver estado del bot"""
+        if not update.message:
+            return
+            
         now = datetime.now()
         status_text = f"""
 🤖 Estado del Bot

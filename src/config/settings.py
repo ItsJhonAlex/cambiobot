@@ -11,6 +11,8 @@ load_dotenv()
 # Configuración del bot
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
+GROUP_ID = os.getenv('GROUP_ID', '4664753197')
+CHANNEL_ID = os.getenv('CHANNEL_ID', '2821523577')
 UPDATE_INTERVAL = int(os.getenv('UPDATE_INTERVAL', 30))
 
 # URLs de las tasas de cambio
@@ -64,7 +66,7 @@ CRYPTO_UPDATE_MESSAGE = "🚨 Nueva actualización en TRMCC (Criptomonedas)"
 TRMI_UPDATE_MESSAGE = "🚨 Nueva actualización en TRMI (Mercado Informal)"
 
 # Nombres de archivos
-CRYPTO_FILENAME = 'crypto_trmi.png'
+CRYPTO_FILENAME = 'real_crypto_trmi.png'
 TRMI_FILENAME = 'trmi.png'
-CRYPTO_TEMP_FILENAME = 'crypto_trmi_temp.png'
+CRYPTO_TEMP_FILENAME = 'real_crypto_trmi_temp.png'
 TRMI_TEMP_FILENAME = 'trmi_temp.png' 

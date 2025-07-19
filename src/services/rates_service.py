@@ -4,7 +4,7 @@ Servicio para manejo de tasas de cambio
 from datetime import datetime
 from typing import Optional, Tuple
 from src.config.settings import (
-    CRYPTO_URL, TRMI_URL, CHAT_ID, CRYPTO_FILENAME, TRMI_FILENAME,
+    CRYPTO_URL, TRMI_URL, CHAT_ID, GROUP_ID, CHANNEL_ID, CRYPTO_FILENAME, TRMI_FILENAME,
     CRYPTO_TEMP_FILENAME, TRMI_TEMP_FILENAME, CRYPTO_UPDATE_MESSAGE,
     TRMI_UPDATE_MESSAGE
 )
@@ -34,7 +34,7 @@ class RatesService:
             TRMI_URL, TRMI_FILENAME
         )
         
-        return crypto_path, trmi_path
+        return str(crypto_path) if crypto_path else None, str(trmi_path) if trmi_path else None
     
     async def get_crypto_rate(self) -> Optional[str]:
         """
@@ -43,9 +43,10 @@ class RatesService:
         Returns:
             Ruta de la imagen de crypto o None
         """
-        return await self.image_service.download_image(
+        result = await self.image_service.download_image(
             CRYPTO_URL, CRYPTO_FILENAME
         )
+        return str(result) if result else None
     
     async def get_trmi_rate(self) -> Optional[str]:
         """
@@ -54,9 +55,10 @@ class RatesService:
         Returns:
             Ruta de la imagen de TRMI o None
         """
-        return await self.image_service.download_image(
+        result = await self.image_service.download_image(
             TRMI_URL, TRMI_FILENAME
         )
+        return str(result) if result else None
     
     async def check_for_updates(self) -> bool:
         """
@@ -81,7 +83,7 @@ class RatesService:
                 new_hash = self.image_service.get_image_hash(crypto_path)
                 if self.last_crypto_hash and new_hash != self.last_crypto_hash:
                     await self.send_update_notification(
-                        crypto_path, CRYPTO_UPDATE_MESSAGE
+                        str(crypto_path), CRYPTO_UPDATE_MESSAGE
                     )
                     updates_found = True
                 self.last_crypto_hash = new_hash
@@ -96,7 +98,7 @@ class RatesService:
                 new_hash = self.image_service.get_image_hash(trmi_path)
                 if self.last_trmi_hash and new_hash != self.last_trmi_hash:
                     await self.send_update_notification(
-                        trmi_path, TRMI_UPDATE_MESSAGE
+                        str(trmi_path), TRMI_UPDATE_MESSAGE
                     )
                     updates_found = True
                 self.last_trmi_hash = new_hash
@@ -119,22 +121,35 @@ class RatesService:
     
     async def send_update_notification(self, image_path: str, caption: str):
         """
-        Enviar notificación de actualización
+        Enviar notificación de actualización a múltiples destinos
         
         Args:
             image_path: Ruta de la imagen
             caption: Mensaje de la notificación
         """
-        if CHAT_ID and self.bot_app:
+        if not self.bot_app:
+            return
+            
+        destinations = []
+        if GROUP_ID:
+            destinations.append(('grupo', GROUP_ID))
+        if CHANNEL_ID:
+            destinations.append(('canal', CHANNEL_ID))
+        if CHAT_ID:
+            destinations.append(('chat', CHAT_ID))
+        
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        for dest_type, dest_id in destinations:
             try:
                 await self.bot_app.bot.send_photo(
-                    chat_id=CHAT_ID,
+                    chat_id=dest_id,
                     photo=open(image_path, 'rb'),
-                    caption=f"{caption}\n\n🕐 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                    caption=f"{caption}\n\n🕐 {timestamp}"
                 )
-                logger.info(f"Notificación enviada al chat {CHAT_ID}")
+                logger.info(f"Notificación enviada al {dest_type} {dest_id}")
             except Exception as e:
-                logger.error(f"Error enviando notificación: {e}")
+                logger.error(f"Error enviando notificación al {dest_type} {dest_id}: {e}")
     
     def initialize_hashes(self):
         """Inicializar hashes con las imágenes existentes"""
